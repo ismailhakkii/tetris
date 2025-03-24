@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/theme_provider.dart';
 
-class NumberSelector extends StatelessWidget {
+class NumberSelector extends ConsumerWidget {
   final Function(int) onNumberSelected;
   final Function(int) getNumberCount;
   
@@ -11,17 +13,20 @@ class NumberSelector extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
+    
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
+          Text(
             'Rakam Seçin',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
+              color: themeMode == ThemeMode.dark ? Colors.white : Colors.black,
             ),
           ),
           const SizedBox(height: 10),
@@ -49,6 +54,7 @@ class NumberSelector extends StatelessWidget {
                     child: NumberButton(
                       number: number,
                       count: count,
+                      themeMode: themeMode,
                       onTap: () => onNumberSelected(number),
                     ),
                   ),
@@ -65,12 +71,14 @@ class NumberSelector extends StatelessWidget {
 class NumberButton extends StatefulWidget {
   final int number;
   final int count;
+  final ThemeMode themeMode;
   final VoidCallback onTap;
   
   const NumberButton({
     Key? key,
     required this.number,
     required this.count,
+    required this.themeMode,
     required this.onTap,
   }) : super(key: key);
 
@@ -126,12 +134,20 @@ class _NumberButtonState extends State<NumberButton> with SingleTickerProviderSt
           width: 60,
           height: 70,
           decoration: BoxDecoration(
-            color: widget.count >= 9 ? Colors.grey[300] : Colors.white,
-            border: Border.all(color: Colors.grey),
+            color: widget.themeMode == ThemeMode.dark
+              ? (widget.count >= 9 ? Colors.grey[700] : Colors.grey[850])
+              : (widget.count >= 9 ? Colors.grey[300] : Colors.white),
+            border: Border.all(
+              color: widget.themeMode == ThemeMode.dark
+                ? Colors.grey[600]!
+                : Colors.grey,
+            ),
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: widget.themeMode == ThemeMode.dark
+                  ? Colors.black.withOpacity(0.3)
+                  : Colors.black.withOpacity(0.1),
                 spreadRadius: 1,
                 blurRadius: 3,
                 offset: const Offset(0, 2),
@@ -143,23 +159,28 @@ class _NumberButtonState extends State<NumberButton> with SingleTickerProviderSt
             children: [
               Text(
                 '${widget.number}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  color: widget.themeMode == ThemeMode.dark
+                    ? Colors.white
+                    : Colors.black,
                 ),
               ),
               const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: _getCountColor(widget.count),
+                  color: _getCountColor(widget.count, widget.themeMode),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
                   '${widget.count}/9',
                   style: TextStyle(
                     fontSize: 12,
-                    color: widget.count >= 9 ? Colors.white : Colors.black87,
+                    color: widget.count >= 9 
+                      ? Colors.white 
+                      : (widget.themeMode == ThemeMode.dark ? Colors.white : Colors.black87),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -171,10 +192,17 @@ class _NumberButtonState extends State<NumberButton> with SingleTickerProviderSt
     );
   }
   
-  Color _getCountColor(int count) {
-    if (count >= 9) return Colors.grey;
-    if (count >= 7) return Colors.orange[200]!;
-    if (count >= 4) return Colors.yellow[200]!;
-    return Colors.green[200]!;
+  Color _getCountColor(int count, ThemeMode themeMode) {
+    if (themeMode == ThemeMode.dark) {
+      if (count >= 9) return Colors.grey;
+      if (count >= 7) return Colors.orange[700]!;
+      if (count >= 4) return Colors.amber[700]!;
+      return Colors.green[700]!;
+    } else {
+      if (count >= 9) return Colors.grey;
+      if (count >= 7) return Colors.orange[200]!;
+      if (count >= 4) return Colors.yellow[200]!;
+      return Colors.green[200]!;
+    }
   }
 }

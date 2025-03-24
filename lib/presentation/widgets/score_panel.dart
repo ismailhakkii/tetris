@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/theme_provider.dart';
 
-class ScorePanel extends StatefulWidget {
+class ScorePanel extends ConsumerStatefulWidget {
   final int score;
   final int lives;
   final int multiplier;
@@ -13,10 +15,10 @@ class ScorePanel extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ScorePanel> createState() => _ScorePanelState();
+  ConsumerState<ScorePanel> createState() => _ScorePanelState();
 }
 
-class _ScorePanelState extends State<ScorePanel> with SingleTickerProviderStateMixin {
+class _ScorePanelState extends ConsumerState<ScorePanel> with SingleTickerProviderStateMixin {
   late int _oldScore;
   late int _oldLives;
   late int _oldMultiplier;
@@ -70,14 +72,19 @@ class _ScorePanelState extends State<ScorePanel> with SingleTickerProviderStateM
     final scoreChange = widget.score - _oldScore;
     final livesChange = widget.lives - _oldLives;
     final multiplierChange = widget.multiplier - _oldMultiplier;
+    final themeMode = ref.watch(themeProvider);
     
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue[50],
+        color: themeMode == ThemeMode.dark
+          ? Colors.grey[800]
+          : Colors.blue[50],
         boxShadow: [
           BoxShadow(
-            color: Colors.black12,
+            color: themeMode == ThemeMode.dark
+              ? Colors.black45
+              : Colors.black12,
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -90,20 +97,26 @@ class _ScorePanelState extends State<ScorePanel> with SingleTickerProviderStateM
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Skor',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
+                  color: themeMode == ThemeMode.dark
+                    ? Colors.white
+                    : Colors.black,
                 ),
               ),
               Row(
                 children: [
                   Text(
                     '${widget.score}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
+                      color: themeMode == ThemeMode.dark
+                        ? Colors.white
+                        : Colors.black,
                     ),
                   ),
                   if (scoreChange > 0)
@@ -121,7 +134,9 @@ class _ScorePanelState extends State<ScorePanel> with SingleTickerProviderStateM
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.green[700],
+                                  color: themeMode == ThemeMode.dark
+                                    ? Colors.green[400]
+                                    : Colors.green[700],
                                 ),
                               ),
                             ),
@@ -138,11 +153,14 @@ class _ScorePanelState extends State<ScorePanel> with SingleTickerProviderStateM
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text(
+              Text(
                 'Çarpan',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
+                  color: themeMode == ThemeMode.dark
+                    ? Colors.white
+                    : Colors.black,
                 ),
               ),
               Row(
@@ -161,7 +179,9 @@ class _ScorePanelState extends State<ScorePanel> with SingleTickerProviderStateM
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: widget.multiplier > 1 ? Colors.orange : Colors.black,
+                        color: widget.multiplier > 1 
+                          ? (themeMode == ThemeMode.dark ? Colors.orange[300] : Colors.orange)
+                          : (themeMode == ThemeMode.dark ? Colors.white : Colors.black),
                       ),
                     ),
                   ),
@@ -180,7 +200,9 @@ class _ScorePanelState extends State<ScorePanel> with SingleTickerProviderStateM
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.orange[700],
+                                  color: themeMode == ThemeMode.dark
+                                    ? Colors.orange[300]
+                                    : Colors.orange[700],
                                 ),
                               ),
                             ),
@@ -197,11 +219,14 @@ class _ScorePanelState extends State<ScorePanel> with SingleTickerProviderStateM
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Text(
+              Text(
                 'Kalan Hamle',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
+                  color: themeMode == ThemeMode.dark
+                    ? Colors.white
+                    : Colors.black,
                 ),
               ),
               Row(
@@ -220,7 +245,9 @@ class _ScorePanelState extends State<ScorePanel> with SingleTickerProviderStateM
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: widget.lives > 1 ? Colors.green : Colors.red,
+                        color: widget.lives > 1 
+                          ? (themeMode == ThemeMode.dark ? Colors.green[400] : Colors.green)
+                          : (themeMode == ThemeMode.dark ? Colors.red[300] : Colors.red),
                       ),
                     ),
                   ),
@@ -236,10 +263,12 @@ class _ScorePanelState extends State<ScorePanel> with SingleTickerProviderStateM
                               padding: const EdgeInsets.only(left: 4.0),
                               child: Text(
                                 '$livesChange',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.red,
+                                  color: themeMode == ThemeMode.dark
+                                    ? Colors.red[300]
+                                    : Colors.red,
                                 ),
                               ),
                             ),
