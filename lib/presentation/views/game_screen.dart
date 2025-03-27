@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:confetti/confetti.dart';
 
 import '../../domain/game_engine.dart';
+import '../../core/theme/theme_provider.dart';
 import '../viewmodels/game_viewmodel.dart';
 import '../widgets/grid_cell.dart';
 import '../widgets/number_selector.dart';
@@ -69,6 +70,27 @@ class _GameScreenState extends ConsumerState<GameScreen> with SingleTickerProvid
       appBar: AppBar(
         title: const Text('Sudoku Oyunu'),
         actions: [
+          // Tema değiştirme butonu
+          Consumer(
+            builder: (context, ref, child) {
+              final themeMode = ref.watch(themeProvider);
+              return IconButton(
+                icon: Icon(
+                  themeMode == ThemeMode.dark 
+                    ? Icons.light_mode 
+                    : Icons.dark_mode,
+                ),
+                onPressed: () {
+                  ref.read(themeProvider.notifier).toggleTheme();
+                },
+                tooltip: themeMode == ThemeMode.dark 
+                  ? 'Aydınlık Tema' 
+                  : 'Karanlık Tema',
+              );
+            },
+          ),
+          
+          // Zorluk seviyesi menüsü
           PopupMenuButton<GameDifficulty>(
             onSelected: (difficulty) {
               vm.setDifficulty(difficulty);
@@ -89,12 +111,15 @@ class _GameScreenState extends ConsumerState<GameScreen> with SingleTickerProvid
               ),
             ],
           ),
+          
+          // Yeniden başlatma butonu
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
               vm.newGame();
               _resetAnimations();
             },
+            tooltip: 'Yeniden Başlat',
           ),
         ],
       ),
@@ -118,12 +143,16 @@ class _GameScreenState extends ConsumerState<GameScreen> with SingleTickerProvid
                         height: gridSize,
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: Colors.black,
+                            color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white.withOpacity(0.6)
+                              : Colors.black,
                             width: 2.0,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.black.withOpacity(0.3)
+                                : Colors.black.withOpacity(0.1),
                               spreadRadius: 1,
                               blurRadius: 10,
                               offset: const Offset(0, 5),
@@ -170,7 +199,9 @@ class _GameScreenState extends ConsumerState<GameScreen> with SingleTickerProvid
                     width: size.width * 0.8,
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.red[100],
+                      color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.red[900]!.withOpacity(0.8)
+                        : Colors.red[100],
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
@@ -201,9 +232,12 @@ class _GameScreenState extends ConsumerState<GameScreen> with SingleTickerProvid
                         const SizedBox(height: 8),
                         Text(
                           'Skorunuz: ${vm.score}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
+                            color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -259,7 +293,9 @@ class _GameScreenState extends ConsumerState<GameScreen> with SingleTickerProvid
                       width: size.width * 0.8,
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.green[100],
+                        color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.green[900]!.withOpacity(0.8)
+                          : Colors.green[100],
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -290,9 +326,12 @@ class _GameScreenState extends ConsumerState<GameScreen> with SingleTickerProvid
                           const SizedBox(height: 8),
                           Text(
                             'Skorunuz: ${vm.score}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w500,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                             ),
                           ),
                           const SizedBox(height: 24),

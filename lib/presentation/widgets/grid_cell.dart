@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/models/game_cell.dart';
+import '../../core/theme/theme_provider.dart';
 import '../viewmodels/game_viewmodel.dart';
 
 class GridCell extends ConsumerStatefulWidget {
@@ -133,15 +134,22 @@ class _GridCellState extends ConsumerState<GridCell> with SingleTickerProviderSt
         child: Container(
           key: _cellKey,
           decoration: BoxDecoration(
-            color: widget.cell.backgroundColor,
+            color: context.getCellBackgroundColor(
+              ref.watch(themeProvider),
+              widget.cell.backgroundColor,
+            ),
             border: Border(
               right: BorderSide(
                 width: (widget.cell.col + 1) % 3 == 0 ? 2.0 : 1.0,
-                color: Colors.black,
+                color: Theme.of(context).brightness == Brightness.dark 
+                  ? Colors.white.withOpacity(0.6) 
+                  : Colors.black,
               ),
               bottom: BorderSide(
                 width: (widget.cell.row + 1) % 3 == 0 ? 2.0 : 1.0,
-                color: Colors.black,
+                color: Theme.of(context).brightness == Brightness.dark 
+                  ? Colors.white.withOpacity(0.6) 
+                  : Colors.black,
               ),
             ),
           ),
@@ -164,6 +172,7 @@ class _GridCellState extends ConsumerState<GridCell> with SingleTickerProviderSt
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: widget.cell.isFixed ? FontWeight.bold : FontWeight.normal,
+                        color: context.getCellTextColor(ref.watch(themeProvider)),
                       ),
                     ),
                   )
